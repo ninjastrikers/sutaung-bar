@@ -169,7 +169,7 @@ setInterval(() => {
 const badWords = ["fuck", "dick", "sapat", "lee", "လီး", "စပတ်", "စောက်ဖုတ်", "လိုး", "စောက်ပတ်", "မအေလိုး", "ငါလိုးမ", "ဖေလိုးမ", "လီးပဲ"];
 
 releaseBtn.addEventListener('click', async () => {
-    // A. Rate Limit Check (1 Minute)
+    // A. Rate Limit Check
     const lastWishTime = localStorage.getItem('lastWishTime');
     const now = Date.now();
     if (lastWishTime && now - parseInt(lastWishTime) < 60000) {
@@ -178,11 +178,36 @@ releaseBtn.addEventListener('click', async () => {
         return;
     }
 
-    // B. Input Validation
+    // B. Basic Content Checks
     const text = wishInput.value.trim();
-    if (text === "") return alert("Please make a wish first!");
+    
+    // 1. Min Length Check
+    if (text.length < 3) {
+        return alert("Your wish is too short. Please write a bit more!");
+    }
 
-    // C. Bad Word Filter
+    // 2. Max Length Check (Double security)
+    if (text.length > 280) {
+        return alert("Your wish is too long. Please keep it under 280 characters.");
+    }
+
+    // C. SPAM DETECTION (The new Ninja logic) 🥷
+    
+    // Check 1: Repeated characters (e.g., "aaaaa", "wwwww")
+    // This Regex looks for any character that repeats 5 times in a row
+    if (/([a-zA-Z0-9\u1000-\u109F])\1{4,}/.test(text)) {
+        return alert("Please write a real wish, not repeated letters.");
+    }
+
+    // Check 2: Keyboard mashing (common patterns)
+    // We check if the text is one long word without spaces (only applies if length > 20)
+    // Note: We skip this for Burmese because Burmese doesn't always use spaces.
+    const isBurmese = /[\u1000-\u109F]/.test(text);
+    if (!isBurmese && !text.includes(' ') && text.length > 20) {
+         return alert("Please add spaces between words.");
+    }
+
+    // D. Bad Word Filter
     const hasBadWord = badWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
     if (hasBadWord) {
         alert("Please keep your wish positive and clean."); 
@@ -190,21 +215,19 @@ releaseBtn.addEventListener('click', async () => {
     }
 
     try {
-        // D. Save to Database
+        // E. Save to Database
         const docRef = await addDoc(collection(db, "wishes"), {
             text: text,
             saduCount: 0,
             reportCount: 0,
-            color: selectedColor, // Save chosen color
+            color: selectedColor,
             timestamp: Date.now()
         });
         
-        // E. Update Local Storage
         localStorage.setItem('lastWishTime', Date.now());
         localStorage.setItem('myLanternId', docRef.id);
         findMyLanternBtn.classList.remove('hidden');
 
-        // F. Instant Gratification (Bypass Queue)
         createLantern({ 
             text: text, 
             saduCount: 0, 
