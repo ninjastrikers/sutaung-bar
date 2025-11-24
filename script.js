@@ -166,7 +166,7 @@ setInterval(() => {
 }, RELEASE_SPEED);
 
 // --- 4. RELEASE WISH (User Action) ---
-const badWords = ["fuck", "dick", "sapat", "lee", "လီး", "စပတ်", "စောက်ဖုတ်", "လိုး", "စောက်ပတ်"];
+const badWords = ["fuck", "dick", "sapat", "lee", "လီး", "စပတ်", "စောက်ဖုတ်", "လိုး", "စောက်ပတ်", "မအေလိုး", "ငါလိုးမ", "ဖေလိုးမ", "လီးပဲ"];
 
 releaseBtn.addEventListener('click', async () => {
     // A. Rate Limit Check (1 Minute)
@@ -303,7 +303,7 @@ reportBtn.addEventListener('click', async () => {
 });
 
 // --- 7. REALTIME DATABASE LISTENER ---
-const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"), limit(30));
+const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"), limit(20));
 
 onSnapshot(q, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
