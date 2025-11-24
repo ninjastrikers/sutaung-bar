@@ -37,14 +37,30 @@ const RELEASE_SPEED = 800;
 const REPORT_THRESHOLD = 5; 
 
 // 0. Color Selection Logic
+const colorMeanings = {
+    orange: { text: "General Wish", hex: "#ff8c00" },
+    red: { text: "Love & Courage", hex: "#ff4444" },
+    green: { text: "Health & Harmony", hex: "#44ff44" },
+    blue: { text: "Peace & Calm", hex: "#4488ff" },
+    purple: { text: "Wisdom & Wealth", hex: "#aa44ff" }
+};
+
+const colorMeaningLabel = document.getElementById('colorMeaning');
+
 document.querySelectorAll('.color-opt').forEach(opt => {
     opt.addEventListener('click', (e) => {
         // Remove selected class from all
         document.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
         // Add to clicked
         e.target.classList.add('selected');
+        
         // Update variable
         selectedColor = e.target.getAttribute('data-color');
+
+        // UPDATE LABEL TEXT AND COLOR
+        const info = colorMeanings[selectedColor];
+        colorMeaningLabel.innerText = info.text;
+        colorMeaningLabel.style.color = info.hex;
     });
 });
 

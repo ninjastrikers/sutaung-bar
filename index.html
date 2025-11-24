@@ -38,16 +38,17 @@
 
         <!-- COLOR PICKER -->
         <div class="color-picker-container">
-            <p class="color-label">Choose Color:</p>
-            <div class="color-options">
-                <!-- Data attributes store the color name for JS -->
-                <div class="color-opt selected" data-color="orange" style="background: #ff8c00;"></div>
-                <div class="color-opt" data-color="red" style="background: #ff4444;"></div>
-                <div class="color-opt" data-color="green" style="background: #44ff44;"></div>
-                <div class="color-opt" data-color="blue" style="background: #4488ff;"></div>
-                <div class="color-opt" data-color="purple" style="background: #aa44ff;"></div>
-            </div>
-        </div>
+    <!-- UPDATED LABEL: Added an ID and default text -->
+    <p class="color-label">Meaning: <span id="colorMeaning" style="color: #ff8c00; font-weight: bold;">General Wish</span></p>
+    
+    <div class="color-options">
+        <div class="color-opt selected" data-color="orange" style="background: #ff8c00;"></div>
+        <div class="color-opt" data-color="red" style="background: #ff4444;"></div>
+        <div class="color-opt" data-color="green" style="background: #44ff44;"></div>
+        <div class="color-opt" data-color="blue" style="background: #4488ff;"></div>
+        <div class="color-opt" data-color="purple" style="background: #aa44ff;"></div>
+    </div>
+</div>
 
         <button id="releaseBtn">Release Lantern</button>
     </div>
