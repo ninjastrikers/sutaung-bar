@@ -27,14 +27,15 @@ const saduBtn = document.getElementById('saduBtn');
 const saduCountDisplay = document.getElementById('saduCount');
 const reportBtn = document.getElementById('reportBtn');
 const findMyLanternBtn = document.getElementById('findMyLanternBtn');
+const colorMeaningLabel = document.getElementById('colorMeaning');
 
 // Global State
-let wishQueue = [];          
-let currentOpenDocId = null; 
+let wishQueue = [];          // Waiting line for lanterns
+let currentOpenDocId = null; // Currently opened wish ID
 let selectedColor = "orange"; // Default color
-const MAX_LANTERNS = 15;     
-const RELEASE_SPEED = 800;   
-const REPORT_THRESHOLD = 5; 
+const MAX_LANTERNS = 15;     // Max visual lanterns on screen
+const RELEASE_SPEED = 1200;  // Gap between lanterns (ms)
+const REPORT_THRESHOLD = 5;  // Auto-hide if reported 5 times
 
 // 0. Color Selection Logic
 const colorMeanings = {
@@ -45,19 +46,16 @@ const colorMeanings = {
     purple: { text: "Wisdom & Wealth", hex: "#aa44ff" }
 };
 
-const colorMeaningLabel = document.getElementById('colorMeaning');
-
 document.querySelectorAll('.color-opt').forEach(opt => {
     opt.addEventListener('click', (e) => {
-        // Remove selected class from all
+        // UI Update
         document.querySelectorAll('.color-opt').forEach(o => o.classList.remove('selected'));
-        // Add to clicked
         e.target.classList.add('selected');
         
-        // Update variable
+        // Logic Update
         selectedColor = e.target.getAttribute('data-color');
-
-        // UPDATE LABEL TEXT AND COLOR
+        
+        // Label Update
         const info = colorMeanings[selectedColor];
         colorMeaningLabel.innerText = info.text;
         colorMeaningLabel.style.color = info.hex;
@@ -86,14 +84,14 @@ function generateStars() {
     }
 }
 
-// 2. Create Visual Lantern
+// --- 2. LANTERN CREATION (The Core Visual) ---
 function createLantern(wishData, id) {
     if (!id) return; 
 
-    // Filter reported
+    // Safety: Don't show reported content
     if ((wishData.reportCount || 0) >= REPORT_THRESHOLD) return;
 
-    // Check duplicates
+    // Avoid duplicates on screen
     const existingLantern = document.getElementById(`lantern-${id}`);
     const isPopular = (wishData.saduCount || 0) >= 10;
 
@@ -102,31 +100,35 @@ function createLantern(wishData, id) {
         return; 
     }
 
+    // Build DOM Element
     const lantern = document.createElement('div');
     lantern.classList.add('lantern');
     lantern.id = `lantern-${id}`;
     
-    // Apply Custom Color Class (e.g., .lantern.red)
+    // Add Color Class
     if (wishData.color && wishData.color !== 'orange') {
         lantern.classList.add(wishData.color);
     }
 
-    // Check if it's MY lantern (From Local Storage)
+    // "My Lantern" Highlight
     const myLanternId = localStorage.getItem('myLanternId');
     if (id === myLanternId) {
         lantern.classList.add('my-lantern');
-        findMyLanternBtn.classList.remove('hidden'); // Show tracker button
+        findMyLanternBtn.classList.remove('hidden'); 
     }
     
+    // Golden Status
     if (isPopular) lantern.classList.add('golden');
 
+    // Random Start Position
     lantern.style.left = Math.random() * 90 + '%';
     lantern.style.bottom = '-50px';
 
+    // Random Speed (Floating Up)
     const duration = Math.random() * 15 + 25; 
     lantern.style.transition = `bottom ${duration}s linear`;
 
-    // Click Event
+    // Click Event -> Open Modal
     lantern.addEventListener('click', () => {
         currentOpenDocId = id; 
         modalText.innerText = wishData.text;
@@ -136,23 +138,38 @@ function createLantern(wishData, id) {
 
     sky.appendChild(lantern);
 
+    // Trigger Animation (Next Frame)
     setTimeout(() => { lantern.style.bottom = '120%'; }, 100);
-    setTimeout(() => { lantern.remove(); }, duration * 1000);
+
+    // --- CLEANUP & RECYCLING (LOOPING) ---
+    setTimeout(() => {
+        lantern.remove();
+
+        // RECYCLING LOGIC:
+        // If the sky isn't too crowded, put this wish back 
+        // at the end of the line to show it again later.
+        if (wishQueue.length < 50) {
+            wishQueue.push({ data: wishData, id: id });
+        }
+
+    }, duration * 1000);
 }
 
-// 3. Queue Processor
+// --- 3. QUEUE PROCESSOR (Traffic Controller) ---
 setInterval(() => {
     const currentLanterns = document.querySelectorAll('.lantern').length;
+    // Only release if under limit AND queue has items
     if (currentLanterns < MAX_LANTERNS && wishQueue.length > 0) {
         const item = wishQueue.shift();
         if(item.id) createLantern(item.data, item.id);
     }
 }, RELEASE_SPEED);
 
-// 4. Release a Wish
+// --- 4. RELEASE WISH (User Action) ---
 const badWords = ["fuck", "dick", "sapat", "lee", "လီး", "စပတ်", "စောက်ဖုတ်", "လိုး", "စောက်ပတ်"];
 
 releaseBtn.addEventListener('click', async () => {
+    // A. Rate Limit Check (1 Minute)
     const lastWishTime = localStorage.getItem('lastWishTime');
     const now = Date.now();
     if (lastWishTime && now - parseInt(lastWishTime) < 60000) {
@@ -161,9 +178,11 @@ releaseBtn.addEventListener('click', async () => {
         return;
     }
 
+    // B. Input Validation
     const text = wishInput.value.trim();
     if (text === "") return alert("Please make a wish first!");
 
+    // C. Bad Word Filter
     const hasBadWord = badWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
     if (hasBadWord) {
         alert("Please keep your wish positive and clean."); 
@@ -171,28 +190,32 @@ releaseBtn.addEventListener('click', async () => {
     }
 
     try {
+        // D. Save to Database
         const docRef = await addDoc(collection(db, "wishes"), {
             text: text,
             saduCount: 0,
             reportCount: 0,
-            color: selectedColor, // Save selected color
+            color: selectedColor, // Save chosen color
             timestamp: Date.now()
         });
         
+        // E. Update Local Storage
         localStorage.setItem('lastWishTime', Date.now());
-        
-        // SAVE MY LANTERN ID
         localStorage.setItem('myLanternId', docRef.id);
-        findMyLanternBtn.classList.remove('hidden'); // Show tracker button
+        findMyLanternBtn.classList.remove('hidden');
 
-        // Create immediately
-        createLantern({ text: text, saduCount: 0, color: selectedColor }, docRef.id);
+        // F. Instant Gratification (Bypass Queue)
+        createLantern({ 
+            text: text, 
+            saduCount: 0, 
+            color: selectedColor 
+        }, docRef.id);
 
         wishInput.value = ""; 
         alert("Your wish has been released to the sky!");
     } catch (e) {
         console.error("Error: ", e);
-        alert("Could not save wish.");
+        alert("Could not save wish. Connection error.");
     }
 });
 
@@ -203,23 +226,21 @@ findMyLanternBtn.addEventListener('click', () => {
 
     const myEl = document.getElementById(`lantern-${myId}`);
     if (myEl) {
-        // Add visual effect
+        // Visual highlight effect
         myEl.classList.add('found-it');
-        
-        // Remove visual effect after 3 seconds
-        setTimeout(() => {
-            myEl.classList.remove('found-it');
-        }, 3000);
+        setTimeout(() => { myEl.classList.remove('found-it'); }, 3000);
     } else {
-        alert("Your lantern has floated too high and disappeared into the stars...");
-        findMyLanternBtn.classList.add('hidden'); // Hide button if gone
+        alert("Your lantern has floated too high and disappeared into the stars... (Wait for it to cycle back!)");
     }
 });
 
-// 6. Buttons Logic
+// --- 6. MODAL ACTIONS (Sadu & Report) ---
+
+// Sadu (Like)
 saduBtn.addEventListener('click', async () => {
     if (!currentOpenDocId) return;
     
+    // Optimistic Update
     let currentCount = parseInt(saduCountDisplay.innerText);
     saduCountDisplay.innerText = currentCount + 1;
     saduBtn.style.transform = "scale(1.2)";
@@ -230,13 +251,15 @@ saduBtn.addEventListener('click', async () => {
         await updateDoc(wishRef, { saduCount: increment(1) });
     } catch (e) { 
         console.error("Sadu Failed:", e);
-        saduCountDisplay.innerText = currentCount; 
+        saduCountDisplay.innerText = currentCount; // Revert on fail
     }
 });
 
+// Report
 reportBtn.addEventListener('click', async () => {
     if (!currentOpenDocId) return;
     
+    // Prevent duplicate reports locally
     const reportedItems = JSON.parse(localStorage.getItem('reportedWishes') || "[]");
     if (reportedItems.includes(currentOpenDocId)) {
         alert("You have already reported this wish.");
@@ -256,12 +279,11 @@ reportBtn.addEventListener('click', async () => {
         modal.classList.add('hidden'); 
         currentOpenDocId = null;
     } catch (e) { 
-        console.error(e);
-        alert("Report failed.");
+        console.error("Report Failed:", e);
     }
 });
 
-// 7. Realtime Listener
+// --- 7. REALTIME DATABASE LISTENER ---
 const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"), limit(50));
 
 onSnapshot(q, (snapshot) => {
@@ -269,6 +291,7 @@ onSnapshot(q, (snapshot) => {
         const data = change.doc.data();
         const id = change.doc.id;
         
+        // Remove from screen if reported
         if ((data.reportCount || 0) >= REPORT_THRESHOLD) {
             const el = document.getElementById(`lantern-${id}`);
             if (el) el.remove();
@@ -276,13 +299,18 @@ onSnapshot(q, (snapshot) => {
         }
 
         if (change.type === "added") {
+            // Add to queue (Create later)
+            // Note: We don't verify duplicates here because the Queue processor logic handles flow,
+            // and createLantern prevents DOM duplicates.
             wishQueue.push({ data, id });
         } 
         else if (change.type === "modified") {
+            // Update live lantern status (e.g. turning golden)
             const lanternEl = document.getElementById(`lantern-${id}`);
             if (lanternEl && (data.saduCount || 0) >= 10) {
                 lanternEl.classList.add('golden');
             }
+            // Update modal text if open
             if (currentOpenDocId === id) {
                 saduCountDisplay.innerText = data.saduCount || 0;
             }
@@ -290,10 +318,11 @@ onSnapshot(q, (snapshot) => {
     });
 });
 
+// Close Modal Logic
 closeModal.addEventListener('click', () => {
     modal.classList.add('hidden');
     currentOpenDocId = null;
 });
 
-// Init
+// --- INITIALIZATION ---
 generateStars();
