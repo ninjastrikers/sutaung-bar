@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sutaung.bar | Make a Wish</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;600;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Favicon (Keep your existing links) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+</head>
+<body>
+
+    <!-- The Sky Container (Holds Stars & Lanterns) -->
+    <div id="sky">
+        <!-- Moon Element -->
+        <div class="moon"></div>
+    </div>
+
+    <!-- The Lake (Visual Overlay for the bottom) -->
+    <!-- <div id="lake-overlay"></div> -->
+
+    <!-- Input Area -->
+    <div class="wish-container">
+        <!-- FIXED: Changed classes to match style.css -->
+        <h1 class="title">sutaung.bar</h1>
+        <p class="subtitle">ဆုတောင်းပါ</p>
+        
+        <textarea id="wishInput" placeholder="Write your wish here..."></textarea>
+        <button id="releaseBtn">Release Lantern</button>
+    </div>
+
+    <!-- Modal to read wishes -->
+    <div id="wishModal" class="modal hidden">
+        <div class="modal-content">
+            <span id="closeModal">&times;</span>
+            <p id="modalText">...</p>
+            
+            <!-- Actions Row -->
+            <div class="action-row">
+                <!-- Sadu (Like) -->
+                <div class="sadu-wrapper">
+                    <button id="saduBtn">🙏 Sadu</button>
+                    <span id="saduCount">0</span>
+                </div>
+
+                <!-- Report Button -->
+                <button id="reportBtn" title="Report offensive content">🚩 Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connect Script as Module -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>

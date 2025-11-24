@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /wishes/{wish} {
+      // Allow reading, creating, and updating (for Sadu/Report)
+      allow read, create, update: if true;
+      
+      // Only allow delete if it's NOT from a web browser (Admin only)
+      allow delete: if false;
+    }
+  }
+}
