@@ -7,33 +7,37 @@
 
 ## ✨ Features
 
-### 🏮 Core Experience
-*   **Virtual Night Sky:** A responsive, animated background with twinkling stars and a glowing moon.
+### 🏮 Visual Atmosphere
+*   **Virtual Night Sky:** A responsive background with 150+ twinkling stars and a glowing moon.
 *   **Real-time Lanterns:** Wishes appear instantly as floating lanterns using Firebase Firestore.
 *   **Wish Interaction:** Click on any lantern to read the wish inside.
+*   **Golden Lanterns:** If a wish becomes popular (10+ "Sadus"), the lantern turns **Gold** and glows brighter than the rest.
 
-### 🎨 Personalization & Tracking
-*   **Color Customization:** Users can choose from 5 lantern colors, each representing a different meaning (e.g., Orange for General, Red for Love, Green for Health).
-*   **"Find My Lantern":** A tracker button helps users locate their specific lantern in the crowded sky.
-*   **"Sadu" System:** A cultural "Like" button. If a wish receives 10+ "Sadu" (Well done/Amen), the lantern turns **Golden** and glows brighter.
+### 🎨 Personalization
+Users can customize their lantern color, each representing a specific intent:
+*   🟠 **Orange:** General Wish
+*   🔴 **Red:** Love & Courage
+*   🟢 **Green:** Health & Harmony
+*   🔵 **Blue:** Peace & Calm
+*   🟣 **Purple:** Wisdom & Wealth
+
+### 🤝 Interaction & Engagement
+*   **"Sadu" (🙏) System:** A cultural equivalent of a "Like." Users can bless others' wishes. Includes local storage checks to prevent duplicate clicks.
+*   **"Find My Lantern":** A tracker button that highlights the user's specific lantern in the crowded sky using a pulsing beacon effect.
+*   **Lantern Looping:** To keep the sky alive without over-reading the database, lanterns "recycle" and loop back into the queue after floating off-screen.
 
 ### 🛡️ Safety & Moderation
-*   **Profanity Filter:** preventing offensive language from being posted.
-*   **Community Reporting:** Users can flag offensive wishes. Wishes with 5+ reports are automatically hidden.
-*   **Rate Limiting:** Prevents spam by limiting users to one wish per minute.
+*   **Profanity Filter:** Automatically blocks wishes containing offensive words (Burmese & English).
+*   **Community Reporting:** Users can flag offensive content. If a wish receives **5 Reports**, it is automatically hidden from the public view.
+*   **Rate Limiting:** Users are limited to releasing **1 wish per minute** to prevent spam (tracked via LocalStorage).
 
-## 🛠️ Tech Stack
-
-*   **Frontend:** HTML5, CSS3 (Animations, Glassmorphism), JavaScript (ES6 Modules).
+## 🛠️ Technical Architecture
+*   **Frontend:** Vanilla JavaScript (ES6 Modules), CSS3 (Glassmorphism, Animations).
 *   **Backend:** Firebase Firestore (Realtime Database).
-*   **Hosting:** Firebase Hosting.
-*   **Design:** Custom CSS gradients and animations (No external CSS frameworks used).
+*   **Performance:**
+    *   **Queue System:** Controls traffic to ensure only 15 lanterns are rendered at a time, preventing browser crashes on low-end devices.
+    *   **Optimistic UI:** "Sadu" counts update instantly for the user while the database updates in the background.
 
-## 🌏 Cultural Context
-
-*   **"Sutaung" (ဆုတောင်း):** Means "Make a wish" or "Pray" in Burmese.
-*   **"Sadu" (သာဓု):** A Pali word used in Myanmar culture to acknowledge and rejoice in someone else's good deed or merit. It is used here equivalent to a "Like" or "Amen."
-*   **Lanterns:** Releasing fire balloons or lanterns is a tradition during the Tazaungdaing festival to pay homage to the Sulamani Pagoda in heaven and to float away bad luck.
 
 ## 🚀 Local Development
 
@@ -52,13 +56,11 @@ To run this project locally on your machine:
     *   Open `script.js` and replace the `firebaseConfig` object with your own keys.
 
 3.  **Run Locally**
-    Since this project uses ES6 Modules, you need a local server.
-    *   If using VS Code, install the **Live Server** extension.
-    *   Right-click `index.html` and select **"Open with Live Server"**.
+    *   Use a local server (e.g., VS Code "Live Server" extension) to run `index.html`.
 
 ## 📦 Deployment
 
-This project is configured for Firebase Hosting.
+This project is configured for Firebase Hosting with HSTS headers enabled for `.bar` domain security compliance.
 
 1.  Install Firebase CLI:
     ```bash
@@ -70,6 +72,17 @@ This project is configured for Firebase Hosting.
     firebase init hosting
     firebase deploy
     ```
+## 🔐 Security Note
+* You will notice the Firebase API keys are visible in `script.js`. **This is intentional and safe**.
+Firebase Client SDK keys are designed to be public identifiers.
+* Security is handled via **Firestore Security Rules** (server-side) and **Google Cloud Console Referrer Restrictions**.
+
+
+## 🌏 Cultural Context
+
+*   **"Sutaung" (ဆုတောင်း):** Means "Make a wish" or "Pray" in Burmese.
+*   **"Sadu" (သာဓု):** A Pali word used in Myanmar culture to acknowledge and rejoice in someone else's good deed or merit. It is used here equivalent to a "Like" or "Amen."
+*   **Lanterns:** Releasing fire balloons or lanterns is a tradition during the Tazaungdaing festival to pay homage to the Sulamani Pagoda in heaven and to float away bad luck.
 
 ## 📄 License
 
