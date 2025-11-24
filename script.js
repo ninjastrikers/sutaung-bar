@@ -239,16 +239,32 @@ findMyLanternBtn.addEventListener('click', () => {
 // Sadu (Like)
 saduBtn.addEventListener('click', async () => {
     if (!currentOpenDocId) return;
+
+    // 1. CHECK LOCAL STORAGE (Prevent duplicates)
+    // We retrieve the list of IDs this user has already blessed
+    const saduList = JSON.parse(localStorage.getItem('saduWishes') || "[]");
     
-    // Optimistic Update
+    if (saduList.includes(currentOpenDocId)) {
+        alert("You have already said Sadu for this wish. 🙏");
+        return; // Stop here
+    }
+    
+    // 2. Optimistic Update (Visual)
     let currentCount = parseInt(saduCountDisplay.innerText);
     saduCountDisplay.innerText = currentCount + 1;
     saduBtn.style.transform = "scale(1.2)";
     setTimeout(() => saduBtn.style.transform = "scale(1)", 200);
 
     try {
+        // 3. Update Database
         const wishRef = doc(db, "wishes", currentOpenDocId);
         await updateDoc(wishRef, { saduCount: increment(1) });
+
+        // 4. SAVE TO LOCAL STORAGE
+        // Add this specific ID to the list so they can't click it again
+        saduList.push(currentOpenDocId);
+        localStorage.setItem('saduWishes', JSON.stringify(saduList));
+
     } catch (e) { 
         console.error("Sadu Failed:", e);
         saduCountDisplay.innerText = currentCount; // Revert on fail
@@ -259,19 +275,22 @@ saduBtn.addEventListener('click', async () => {
 reportBtn.addEventListener('click', async () => {
     if (!currentOpenDocId) return;
     
-    // Prevent duplicate reports locally
+    // 1. CHECK LOCAL STORAGE
     const reportedItems = JSON.parse(localStorage.getItem('reportedWishes') || "[]");
+    
     if (reportedItems.includes(currentOpenDocId)) {
         alert("You have already reported this wish.");
-        return;
+        return; // Stop here
     }
 
     if (!confirm("Are you sure you want to report this wish?")) return;
 
     try {
+        // 2. Update Database
         const wishRef = doc(db, "wishes", currentOpenDocId);
         await updateDoc(wishRef, { reportCount: increment(1) });
 
+        // 3. SAVE TO LOCAL STORAGE
         reportedItems.push(currentOpenDocId);
         localStorage.setItem('reportedWishes', JSON.stringify(reportedItems));
 
