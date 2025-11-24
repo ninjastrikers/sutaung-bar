@@ -16,6 +16,9 @@
 </head>
 <body>
 
+    <!-- TRACKER BUTTON (Top Right) -->
+    <button id="findMyLanternBtn" class="hidden">📍 Find My Lantern</button>
+    
     <!-- The Sky Container (Holds Stars & Lanterns) -->
     <div id="sky">
         <!-- Moon Element -->
@@ -32,6 +35,20 @@
         <p class="subtitle">ဆုတောင်းပါ</p>
         
         <textarea id="wishInput" placeholder="Write your wish here..."></textarea>
+
+        <!-- COLOR PICKER -->
+        <div class="color-picker-container">
+            <p class="color-label">Choose Color:</p>
+            <div class="color-options">
+                <!-- Data attributes store the color name for JS -->
+                <div class="color-opt selected" data-color="orange" style="background: #ff8c00;"></div>
+                <div class="color-opt" data-color="red" style="background: #ff4444;"></div>
+                <div class="color-opt" data-color="green" style="background: #44ff44;"></div>
+                <div class="color-opt" data-color="blue" style="background: #4488ff;"></div>
+                <div class="color-opt" data-color="purple" style="background: #aa44ff;"></div>
+            </div>
+        </div>
+
         <button id="releaseBtn">Release Lantern</button>
     </div>
 
