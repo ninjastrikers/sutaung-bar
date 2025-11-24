@@ -303,7 +303,7 @@ reportBtn.addEventListener('click', async () => {
 });
 
 // --- 7. REALTIME DATABASE LISTENER ---
-const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"), limit(50));
+const q = query(collection(db, "wishes"), orderBy("timestamp", "desc"), limit(30));
 
 onSnapshot(q, (snapshot) => {
     snapshot.docChanges().forEach((change) => {
