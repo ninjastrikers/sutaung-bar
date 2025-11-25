@@ -40,7 +40,7 @@ body {
 #sky {
     position: relative;
     width: 100%;
-    height: 80%; /* Sky takes top 80% */
+    height: 100%; /* CHANGE THIS from 80% to 100% */
     background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
     z-index: 1;
 }
