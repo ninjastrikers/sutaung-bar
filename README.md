@@ -8,9 +8,9 @@
 ## ✨ Features
 
 ### 🏮 Visual Atmosphere
-*   **Virtual Night Sky:** A responsive background with 150+ twinkling stars and a glowing moon.
+*   **Virtual Night Sky:** A responsive background with 150+ twinkling stars.
+*   **Moon Phases:** Real-time moon phase calculation (New Moon, Waxing, Full Moon, Waning) that syncs with the actual astronomical calendar.
 *   **Real-time Lanterns:** Wishes appear instantly as floating lanterns using Firebase Firestore.
-*   **Wish Interaction:** Click on any lantern to read the wish inside.
 *   **Golden Lanterns:** If a wish becomes popular (10+ "Sadus"), the lantern turns **Gold** and glows brighter than the rest.
 
 ### 🎨 Personalization
@@ -28,6 +28,7 @@ Users can customize their lantern color, each representing a specific intent:
 
 ### 🛡️ Safety & Moderation
 *   **Profanity Filter:** Automatically blocks wishes containing offensive words (Burmese & English).
+*   **Spam Protection:** Blocks keyboard smashing (e.g., "aaaaa") and prevents ultra-long inputs without spaces.
 *   **Community Reporting:** Users can flag offensive content. If a wish receives **5 Reports**, it is automatically hidden from the public view.
 *   **Rate Limiting:** Users are limited to releasing **1 wish per minute** to prevent spam (tracked via LocalStorage).
 
