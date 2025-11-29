@@ -53,44 +53,71 @@ body {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    /* Default animation (Keep your existing float) */
+    transition: all 1s ease;
+    /* Default Glow */
+    filter: drop-shadow(0 0 10px #fffae3);
     animation: moonFloat 10s infinite ease-in-out alternate;
-    transition: all 1s ease; /* Smooth transition if date changes */
 }
 
-/* 1. FULL MOON (Day 13-16) */
+/* 1. NEW MOON (Invisible) */
+.moon.new {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+
+/* 2. FULL MOON (Bright Circle) */
 .moon.full {
     background-color: #fffae3;
     box-shadow: 0 0 20px 5px rgba(255, 250, 227, 0.6);
 }
 
-/* 2. NEW MOON (Day 0-2 & 28-29) */
-.moon.new {
+/* 3. WAXING CRESCENT (Right side lit, crescent shape) */
+.moon.waxing-crescent {
     background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Faint outline */
-    box-shadow: none;
+    /* Shadow offset to the left creates a lit crescent on the right */
+    box-shadow: -15px 0 0 0 #fffae3; 
+    transform: rotate(-10deg);
 }
 
-/* 3. WAXING CRESCENT (Growing - Shadow moves Left) */
-/* The lit part is on the RIGHT, so we cast shadow to RIGHT? 
-   Actually, with CSS box-shadow art: 
-   To make a "C" shape (Right Lit), we offset shadow to the Right. */
-.moon.waxing {
-    background-color: transparent;
-    box-shadow: 15px -5px 0 0 #fffae3; /* Crescent facing Left (Lit on Right) */
-    filter: drop-shadow(0 0 10px #fffae3);
-    transform: rotate(-15deg); /* Tilt for realism */
+/* 4. WAXING GIBBOUS (Right side mostly lit, small dark sliver on left) */
+.moon.waxing-gibbous {
+    background-color: #fffae3;
+    /* Dark Inset Shadow on the Left to hide part of the moon */
+    /* Color matches the dark sky (#1b2735) */
+    box-shadow: inset 15px 0 0 0 #1b2735; 
+    transform: rotate(-10deg);
 }
 
-/* 4. WANING CRESCENT (Shrinking - Shadow moves Right) */
-.moon.waning {
-    background-color: transparent;
-    box-shadow: -15px 5px 0 0 #fffae3; /* Crescent facing Right (Lit on Left) */
-    filter: drop-shadow(0 0 10px #fffae3);
-    transform: rotate(15deg);
+/* 5. FIRST QUARTER (Right Half Lit) */
+.moon.first-quarter {
+    background-color: #fffae3;
+    /* Half covered by dark sky */
+    box-shadow: inset 40px 0 0 0 #1b2735; 
+    transform: rotate(0deg);
 }
 
-/* Keep the Float Animation */
+/* 6. WANING GIBBOUS (Left side mostly lit) */
+.moon.waning-gibbous {
+    background-color: #fffae3;
+    box-shadow: inset -15px 0 0 0 #1b2735;
+    transform: rotate(10deg);
+}
+
+/* 7. LAST QUARTER (Left Half Lit) */
+.moon.last-quarter {
+    background-color: #fffae3;
+    box-shadow: inset -40px 0 0 0 #1b2735;
+    transform: rotate(0deg);
+}
+
+/* 8. WANING CRESCENT (Left side lit) */
+.moon.waning-crescent {
+    background-color: transparent;
+    box-shadow: 15px 0 0 0 #fffae3;
+    transform: rotate(10deg);
+}
+
 @keyframes moonFloat {
     0% { transform: translateY(0) rotate(0deg); }
     100% { transform: translateY(-10px) rotate(5deg); }

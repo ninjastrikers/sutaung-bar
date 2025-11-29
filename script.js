@@ -62,55 +62,66 @@ document.querySelectorAll('.color-opt').forEach(opt => {
     });
 });
 
-// --- MOON PHASE LOGIC ---
+// --- MOON PHASE LOGIC (Accurate) ---
 function updateMoonPhase() {
     const moonEl = document.querySelector('.moon');
     const date = new Date();
 
-    // 1. Calculate the "Moon Age" (Days since known New Moon)
-    // Reference New Moon: January 6, 2000
+    // 1. Calculate Moon Age
+    // Ref: New Moon Jan 6 2000
     const knownNewMoon = new Date('2000-01-06 12:24:01'); 
-    const cycleLength = 29.53058867; // Synodic month length
-    
-    // Difference in time
+    const cycleLength = 29.53058867; 
     const diffTime = date.getTime() - knownNewMoon.getTime();
-    // Convert to days
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
-    
-    // Where are we in the cycle? (0 to 29.5)
     const moonAge = diffDays % cycleLength;
 
-    // 2. Determine Phase Name & Style
-    // Clear old classes
-    moonEl.classList.remove('full', 'new', 'waxing', 'waning');
+    // 2. Clear old classes
+    moonEl.className = 'moon'; // Reset to base class
 
     let phaseName = "";
 
-    if (moonAge < 1.5 || moonAge > 28) {
-        // New Moon (Hidden)
+    // 3. Determine Phase (8 Stages)
+    if (moonAge < 1.84) {
         moonEl.classList.add('new');
         phaseName = "New Moon";
     } 
-    else if (moonAge >= 13.5 && moonAge <= 16.5) {
-        // Full Moon (Bright Circle)
+    else if (moonAge < 5.53) {
+        moonEl.classList.add('waxing-crescent');
+        phaseName = "Waxing Crescent";
+    } 
+    else if (moonAge < 9.22) {
+        // Includes First Quarter (Half)
+        moonEl.classList.add('first-quarter');
+        phaseName = "First Quarter";
+    } 
+    else if (moonAge < 12.91) {
+        moonEl.classList.add('waxing-gibbous');
+        phaseName = "Waxing Gibbous";
+    } 
+    else if (moonAge < 16.61) {
         moonEl.classList.add('full');
         phaseName = "Full Moon";
     } 
-    else if (moonAge < 13.5) {
-        // Waxing (Growing)
-        moonEl.classList.add('waxing');
-        phaseName = "Waxing Crescent";
+    else if (moonAge < 20.30) {
+        moonEl.classList.add('waning-gibbous');
+        phaseName = "Waning Gibbous";
+    } 
+    else if (moonAge < 23.99) {
+        moonEl.classList.add('last-quarter');
+        phaseName = "Last Quarter";
+    } 
+    else if (moonAge < 27.68) {
+        moonEl.classList.add('waning-crescent');
+        phaseName = "Waning Crescent";
     } 
     else {
-        // Waning (Shrinking)
-        moonEl.classList.add('waning');
-        phaseName = "Waning Crescent";
+        moonEl.classList.add('new');
+        phaseName = "New Moon";
     }
 
-    // 3. Add Tooltip (So user sees the name on hover)
-    moonEl.setAttribute('title', `Tonight's Phase: ${phaseName}`);
-    
-    console.log(`Moon Age: ${moonAge.toFixed(1)} days (${phaseName})`);
+    // 4. Tooltip
+    moonEl.setAttribute('title', `Tonight: ${phaseName} (Age: ${moonAge.toFixed(1)})`);
+    console.log(`Moon Phase: ${phaseName} (Age: ${moonAge.toFixed(1)})`);
 }
 
 // 1. Generate Stars
