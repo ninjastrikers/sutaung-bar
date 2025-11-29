@@ -45,25 +45,55 @@ body {
     z-index: 1;
 }
 
-/* --- MOON --- */
+/* --- MOON BASE --- */
 .moon {
     position: absolute;
     top: 50px;
     right: 50px;
     width: 80px;
     height: 80px;
-    background: transparent;
     border-radius: 50%;
-    /* Create Crescent Shape using box-shadow */
-    box-shadow: -15px 10px 0 2px #fffae3; 
-    opacity: 0.9;
-    filter: drop-shadow(0 0 10px #fffae3);
+    /* Default animation (Keep your existing float) */
     animation: moonFloat 10s infinite ease-in-out alternate;
+    transition: all 1s ease; /* Smooth transition if date changes */
 }
 
+/* 1. FULL MOON (Day 13-16) */
+.moon.full {
+    background-color: #fffae3;
+    box-shadow: 0 0 20px 5px rgba(255, 250, 227, 0.6);
+}
+
+/* 2. NEW MOON (Day 0-2 & 28-29) */
+.moon.new {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Faint outline */
+    box-shadow: none;
+}
+
+/* 3. WAXING CRESCENT (Growing - Shadow moves Left) */
+/* The lit part is on the RIGHT, so we cast shadow to RIGHT? 
+   Actually, with CSS box-shadow art: 
+   To make a "C" shape (Right Lit), we offset shadow to the Right. */
+.moon.waxing {
+    background-color: transparent;
+    box-shadow: 15px -5px 0 0 #fffae3; /* Crescent facing Left (Lit on Right) */
+    filter: drop-shadow(0 0 10px #fffae3);
+    transform: rotate(-15deg); /* Tilt for realism */
+}
+
+/* 4. WANING CRESCENT (Shrinking - Shadow moves Right) */
+.moon.waning {
+    background-color: transparent;
+    box-shadow: -15px 5px 0 0 #fffae3; /* Crescent facing Right (Lit on Left) */
+    filter: drop-shadow(0 0 10px #fffae3);
+    transform: rotate(15deg);
+}
+
+/* Keep the Float Animation */
 @keyframes moonFloat {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-10px); }
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-10px) rotate(5deg); }
 }
 
 /* UI Container at bottom */

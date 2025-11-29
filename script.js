@@ -62,6 +62,57 @@ document.querySelectorAll('.color-opt').forEach(opt => {
     });
 });
 
+// --- MOON PHASE LOGIC ---
+function updateMoonPhase() {
+    const moonEl = document.querySelector('.moon');
+    const date = new Date();
+
+    // 1. Calculate the "Moon Age" (Days since known New Moon)
+    // Reference New Moon: January 6, 2000
+    const knownNewMoon = new Date('2000-01-06 12:24:01'); 
+    const cycleLength = 29.53058867; // Synodic month length
+    
+    // Difference in time
+    const diffTime = date.getTime() - knownNewMoon.getTime();
+    // Convert to days
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+    // Where are we in the cycle? (0 to 29.5)
+    const moonAge = diffDays % cycleLength;
+
+    // 2. Determine Phase Name & Style
+    // Clear old classes
+    moonEl.classList.remove('full', 'new', 'waxing', 'waning');
+
+    let phaseName = "";
+
+    if (moonAge < 1.5 || moonAge > 28) {
+        // New Moon (Hidden)
+        moonEl.classList.add('new');
+        phaseName = "New Moon";
+    } 
+    else if (moonAge >= 13.5 && moonAge <= 16.5) {
+        // Full Moon (Bright Circle)
+        moonEl.classList.add('full');
+        phaseName = "Full Moon";
+    } 
+    else if (moonAge < 13.5) {
+        // Waxing (Growing)
+        moonEl.classList.add('waxing');
+        phaseName = "Waxing Crescent";
+    } 
+    else {
+        // Waning (Shrinking)
+        moonEl.classList.add('waning');
+        phaseName = "Waning Crescent";
+    }
+
+    // 3. Add Tooltip (So user sees the name on hover)
+    moonEl.setAttribute('title', `Tonight's Phase: ${phaseName}`);
+    
+    console.log(`Moon Age: ${moonAge.toFixed(1)} days (${phaseName})`);
+}
+
 // 1. Generate Stars
 function generateStars() {
     const starCount = 150; 
@@ -368,3 +419,4 @@ closeModal.addEventListener('click', () => {
 
 // --- INITIALIZATION ---
 generateStars();
+updateMoonPhase();
